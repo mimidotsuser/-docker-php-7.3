@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  appfpm:
+    image: mimidots/php7.3.30-fpm-alpine
+    volumes:
+      - ${pwd}:/var/www/html
+    restart: on-failure
+    ports:
+      - "9000:9000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      lava:
+        ipv4_address: 172.0.10.4
+
+  cron:
+    image: mimidots/php7.3.30-fpm-alpine
+    entrypoint: /app/cron/cron.sh '${MATOMO_BASE_URL?err}'
+    restart: on-failure
+    volumes:
+      - $PWD/app/:/var/www/html
+      - $PWD/cron.sh:/app/cron/cron.sh
+    depends_on:
+      - appfpm
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      lava:
+        ipv4_address: 172.0.10.5
+
+
+
+networks:
+  lava:
+    name: lava
+    driver: bridge
+    ipam:
+      config:
+        subnet: 172.0.10.0/29

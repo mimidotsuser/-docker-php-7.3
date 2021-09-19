@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  appdb:
+    container_name: ${DB_HOST?err}
+    image: mariadb:10.6.4
+    restart: on-failure
+    ports:
+      - "${DB_PORT?err}"
+    volumes:
+      - ./data/sqldb/:/var/lib/mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE?err}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # for development use only
+      MYSQL_PASSWORD: "${DB_PASSWORD?err}"
+      MYSQL_USER: "${DB_USERNAME?err}"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      lava:
+        ipv4_address: 172.0.10.3
+
+  nginx:
+    image: nginx:alpine
+    restart: on-failure
+    volumes:
+      - ${pwd}:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - appfpm
+    networks:
+      lava:
+        ipv4_address: 172.0.10.6
+
+  appfpm:
+    depends_on:
+      - appdb
