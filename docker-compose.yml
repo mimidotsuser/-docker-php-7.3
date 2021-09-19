@@ -4,7 +4,7 @@ services:
   appfpm:
     image: mimidots/php7.3.30-fpm-alpine
     volumes:
-      - ${pwd}:/var/www/html
+      - $PWD:/var/www/html
     restart: on-failure
     ports:
       - "9000:9000"
