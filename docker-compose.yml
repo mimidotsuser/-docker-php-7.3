@@ -16,7 +16,7 @@ services:
 
   cron:
     image: mimidots/php7.3.30-fpm-alpine
-    entrypoint: /app/cron/cron.sh '${MATOMO_BASE_URL?err}'
+    entrypoint: /app/cron/cron.sh
     restart: on-failure
     volumes:
       - $PWD/app/:/var/www/html
