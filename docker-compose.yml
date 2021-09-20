@@ -29,8 +29,6 @@ services:
       lava:
         ipv4_address: 172.0.10.5
 
-
-
 networks:
   lava:
     name: lava
